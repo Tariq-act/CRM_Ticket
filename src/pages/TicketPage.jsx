@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CategoriesContext from '../context';
 
 function TicketPage() {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ function TicketPage() {
     progress: 0,
     timestamp: new Date().toISOString(),
   });
+  const { categories, setCategories } = useContext(CategoriesContext);
   const editMode = false;
   const navigate = useNavigate();
 
@@ -34,8 +36,6 @@ function TicketPage() {
       [name]: value,
     }));
   };
-
-  const categories = ['test1', 'test2', 'test3'];
 
   console.log(formData);
   return (
@@ -80,7 +80,6 @@ function TicketPage() {
               name='category'
               type='text'
               onChange={handleChange}
-              required={true}
               value={formData.category}
             />
             <label>Priority</label>
