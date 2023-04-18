@@ -157,6 +157,8 @@ nav .icon {
 .ticket {
   padding: 30px;
   width: 100%;
+  height: 90vh;
+  overflow: scroll;
 }
 
 .ticket .ticket-container {
@@ -191,4 +193,17 @@ nav .icon {
 
 .ticket form .multiple-input-container {
   margin: 20px 0 20px 0;
+}
+
+.ticket form .img-preview {
+  max-width: 50rem;
+  max-height: 50rem;
+}
+
+.ticket form .img-preview img {
+  width: 100%;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

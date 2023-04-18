@@ -10,10 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const url =
-  'https://c94a9b19-ed8e-4731-9e9b-dc3fc03445af-europe-west1.apps.astra.datastax.com/api/rest/v2/namespaces/tickets/collections/tasks';
-const token =
-  'AstraCS:NiwaDDkzNhdAbLPAZZCPzdHZ:60c899f51e2d36b4e276442f05da285ceb2f63c5b4a4534980bc5b33f56f8d48';
+const url = process.env.URL;
+const token = process.env.ASTRA_TOKEN;
 
 app.get('/tickets', async (req, res) => {
   const options = {
@@ -33,6 +31,26 @@ app.get('/tickets', async (req, res) => {
   }
 });
 
+app.get('/tickets/:documentId', async (req, res) => {
+  const id = req.params.documentId;
+
+  const options = {
+    method: 'GET',
+    headers: {
+      Accepts: 'application/json',
+      'X-Cassandra-Token': token,
+    },
+  };
+
+  try {
+    const response = await axios(`${url}/${id}`, options);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error });
+  }
+});
+
 app.post('/tickets', async (req, res) => {
   const formData = req.body.formData;
 
@@ -40,7 +58,7 @@ app.post('/tickets', async (req, res) => {
     method: 'POST',
     headers: {
       Accepts: 'application/json',
-      'X-cassandra-Token': token,
+      'X-Cassandra-Token': token,
       'Content-Type': 'application/json',
     },
     data: formData,
@@ -48,6 +66,29 @@ app.post('/tickets', async (req, res) => {
 
   try {
     const response = await axios(url, options);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error });
+  }
+});
+
+app.put('/tickets/:documentId', async (req, res) => {
+  const id = req.params.documentId;
+
+  const data = req.body.data;
+
+  const options = {
+    method: 'PUT',
+    headers: {
+      Accepts: 'application/json',
+      'X-Cassandra-Token': token,
+    },
+    data,
+  };
+
+  try {
+    const response = await axios(`${url}/${id}`, options);
     res.status(200).json(response.data);
   } catch (error) {
     console.log(error);

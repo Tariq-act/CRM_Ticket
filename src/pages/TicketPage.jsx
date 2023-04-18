@@ -1,20 +1,32 @@
-import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import CategoriesContext from '../context';
 
-function TicketPage() {
+function TicketPage({ editMode }) {
   const [formData, setFormData] = useState({
     status: 'not started',
     progress: 0,
     timestamp: new Date().toISOString(),
   });
   const { categories, setCategories } = useContext(CategoriesContext);
-  const editMode = false;
+
   const navigate = useNavigate();
+  let { id } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (editMode) {
+      const response = await axios.put(`http://localhost:8000/tickets/${id}`, {
+        data: formData,
+      });
+      const success = response.status === 200;
+      if (success) {
+        navigate('/');
+      }
+      console.log(success);
+    }
 
     if (!editMode) {
       const response = await axios.post('http://localhost:8000/tickets', {
@@ -27,6 +39,16 @@ function TicketPage() {
       console.log(success);
     }
   };
+
+  const fetchData = async () => {
+    const response = await axios.get(`http://localhost:8000/tickets/${id}`);
+    setFormData(response.data.data);
+  };
+
+  useEffect(() => {
+    if (editMode) fetchData();
+  }, []);
+
   const handleChange = (e) => {
     const value = e.target.value;
     const name = e.target.name;
@@ -65,7 +87,7 @@ function TicketPage() {
             <label>Category</label>
             <select
               name='category'
-              value={formData.category}
+              value={formData.category || 'New Category'}
               onChange={handleChange}
             >
               {categories?.map((category, _index) => (
